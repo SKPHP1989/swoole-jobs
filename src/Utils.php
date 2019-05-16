@@ -7,10 +7,21 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Kcloze\Jobs;
+namespace Michael\Jobs;
+
+use Michael\Jobs\Input\HtmlInput;
+use Michael\Jobs\Input\SymConsoleInput;
+use Michael\Jobs\Interfaces\Log;
+use Michael\Jobs\Interfaces\Provider;
+use Michael\Jobs\Output\HtmlOutput;
+use Michael\Jobs\Provider\ConsoleProvider;
+use Michael\Jobs\Provider\CliProvider;
+use Michael\Jobs\Provider\CgiProvider;
 
 class Utils
 {
+    static $config;
+
     /**
      * 循环创建目录.
      *
@@ -18,47 +29,107 @@ class Utils
      * @param mixed $recursive
      * @param mixed $mode
      */
-    public static function mkdir($path, $mode=0777, $recursive=true)
+    public static function mkdir($path, $mode = 0777, $recursive = true)
     {
         if (!is_dir($path)) {
             mkdir($path, $mode, $recursive);
         }
     }
 
-    public static function catchError(Logs $logger, $exception)
+    /**
+     * @param array $array
+     * @param string $key
+     * @param null $default
+     * @return mixed|null
+     */
+    public static function arrayGet(array $array, string $key, $default = null)
     {
-        $error  = '错误类型：' . get_class($exception) . PHP_EOL;
-        $error .= '错误代码：' . $exception->getCode() . PHP_EOL;
-        $error .= '错误信息：' . $exception->getMessage() . PHP_EOL;
-        $error .= '错误堆栈：' . $exception->getTraceAsString() . PHP_EOL;
-
-        $logger && $logger->log($error, 'error', 'error');
-    }
-
-    public static function getMillisecond()
-    {
-        return microtime(true);
+        if (isset($array[$key])) {
+            return $array[$key];
+        } else {
+            return $default;
+        }
     }
 
     /**
-     * Get Server Memory Usage.
-     *
-     * @return string
+     * 获取日志类
+     * @return Log
      */
-    public static function getServerMemoryUsage()
+    public static function getLog()
     {
-        return round(memory_get_usage(true) / (1024 * 1024), 2) . ' MB';
+        return static::getProvider()->get('log');
+    }
+
+    public static function getConfig()
+    {
+        return static::$config;
+    }
+
+    public static function setConfig($config)
+    {
+        static::$config = $config;
     }
 
     /**
-     * Get Server load avg.
-     *
-     * @return string
+     * @return Di
      */
-    public static function getSysLoadAvg()
+    public static function app()
     {
-        $loadavg = function_exists('sys_getloadavg') ? array_map('round', sys_getloadavg(), [2]) : ['-', '-', '-'];
+        static $_app = null;
+        if (is_null($_app)) {
+            $_app = new Di();
+        }
+        return $_app;
+    }
 
-        return 'load average: ' . implode(', ', $loadavg);
+    /**
+     * @return Provider
+     */
+    public static function getProvider()
+    {
+        return static::app()->get('provider');
+    }
+
+    /**
+     * 注册命令端提供者
+     * @return true
+     */
+    public static function registerConsoleProvider()
+    {
+        return static::app()->setShared('provider', ConsoleProvider::class);
+    }
+
+    /**
+     * 注册简单提供者
+     */
+    public static function registerCliProvider()
+    {
+        return static::app()->setShared('provider', CliProvider::class);
+    }
+    /**
+     * 注册简单提供者
+     */
+    public static function registerCgiProvider()
+    {
+        return static::app()->setShared('provider', CgiProvider::class);
+    }
+
+    /**
+     * @param \Closure $closure
+     * @param array $params
+     * @return bool|mixed
+     */
+    public static function runMethodExceptionHandle(\Closure $closure, array $params = [])
+    {
+        try {
+            return call_user_func_array($closure, $params);
+        } catch (\Exception $e) {
+            Utils::getLog()->critical($e->getCode() . ':' . $e->getMessage());
+            Utils::getLog()->critical($e->getTraceAsString());
+        } catch (\Throwable $e) {
+            Utils::getLog()->critical($e->getCode() . ':' . $e->getMessage());
+            Utils::getLog()->critical($e->getTraceAsString());
+        }
+        return false;
     }
 }
