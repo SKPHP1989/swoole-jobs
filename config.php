@@ -35,7 +35,6 @@ return $config = [
             'idle_sleep_time' => 3,
             'max_pop_num' => 1000,
         ],
-        /*
         'MyJob2' => [
             'name' => 'MyJob2',
             'worker_min_num' => 3,
@@ -43,7 +42,7 @@ return $config = [
             'driver' => 'redis_queue',
             'idle_sleep_time' => 3,
             'max_pop_num' => 1000,
-        ],*/
+        ],
     ],
     'queue' => [
         'redis_queue' => [

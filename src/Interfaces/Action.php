@@ -9,9 +9,19 @@
 namespace Michael\Jobs\Interfaces;
 interface Action
 {
-    public function setAutoloadPath($path='');
+    /**
+     * set auto load path
+     * @param string $path
+     * @return mixed
+     */
+    public function setAutoloadPath($path = '');
 
-    public function setAppPath($path='');
+    /**
+     * set app path
+     * @param string $path
+     * @return mixed
+     */
+    public function setAppPath($path = '');
 
     /**
      * @param Task $task

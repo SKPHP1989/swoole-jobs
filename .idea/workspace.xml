@@ -2,20 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cd4423cd-10c0-4c29-b3a7-d2db38e72d25" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/Command/JobHelpCommand.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Command/JobStopCommand.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/console" beforeDir="false" afterPath="$PROJECT_DIR$/console" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Action/BaseAction.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Action/BaseAction.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Action/LaravelAction.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Action/LaravelAction.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Command/JobStartCommand.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Command/JobStartCommand.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Console/BaseConsole.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Console/BaseConsole.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.php" beforeDir="false" afterPath="$PROJECT_DIR$/config.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Command/BaseCommand.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Command/BaseCommand.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Interfaces/Action.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Interfaces/Action.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Job/BaseJob.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Job/BaseJob.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Process/BaseProcess.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Process/BaseProcess.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Queue/RedisQueue.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Queue/RedisQueue.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Task/BaseTask.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Task/BaseTask.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/var/pid" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/var/pinfo" beforeDir="false" afterPath="$PROJECT_DIR$/var/pinfo" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -43,9 +35,9 @@
           <entry key="json" value="2" />
           <entry key="log" value="1" />
           <entry key="mjobs" value="1" />
-          <entry key="php" value="285" />
+          <entry key="php" value="291" />
           <entry key="php_cs" value="1" />
-          <entry key="pid" value="10" />
+          <entry key="pid" value="11" />
           <entry key="pinfo" value="9" />
           <entry key="swoole-jobs" value="1" />
         </counts>
@@ -54,8 +46,8 @@
         <counts>
           <entry key="Dockerfile" value="1" />
           <entry key="JSON" value="2" />
-          <entry key="PHP" value="294" />
-          <entry key="PLAIN_TEXT" value="21" />
+          <entry key="PHP" value="300" />
+          <entry key="PLAIN_TEXT" value="22" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
@@ -64,7 +56,7 @@
           <entry key="dummy" value="82" />
           <entry key="json" value="22" />
           <entry key="mjobs" value="142" />
-          <entry key="php" value="14903" />
+          <entry key="php" value="15410" />
           <entry key="pid" value="4" />
           <entry key="pinfo" value="4" />
           <entry key="swoole-jobs" value="13" />
@@ -73,7 +65,7 @@
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="JSON" value="22" />
-          <entry key="PHP" value="15312" />
+          <entry key="PHP" value="15819" />
           <entry key="PLAIN_TEXT" value="90" />
         </counts>
       </usages-collector>
@@ -85,16 +77,16 @@
         <entry file="file://$PROJECT_DIR$/src/Command/JobStartCommand.php">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="506">
-              <caret line="24" column="41" selection-start-line="24" selection-start-column="41" selection-end-line="24" selection-end-column="41" />
+              <caret line="24" column="19" lean-forward="true" selection-start-line="24" selection-start-column="19" selection-end-line="24" selection-end-column="19" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Process/BaseProcess.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1314">
-              <caret line="222" column="66" selection-start-line="222" selection-start-column="66" selection-end-line="222" selection-end-column="66" />
+            <state relative-caret-position="1775">
+              <caret line="322" column="16" selection-start-line="322" selection-start-column="16" selection-end-line="322" selection-end-column="16" />
               <folding>
                 <element signature="e#120#147#0#PHP" expanded="true" />
               </folding>
@@ -103,70 +95,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Command/JobHelpCommand.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="506">
-              <caret line="24" column="41" selection-start-line="24" selection-start-column="41" selection-end-line="24" selection-end-column="41" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Command/JobStopCommand.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="506">
-              <caret line="24" column="41" selection-start-line="24" selection-start-column="41" selection-end-line="24" selection-end-column="41" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Command.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret selection-end-line="2" selection-end-column="23" />
-              <folding>
-                <element signature="e#32#67#0#PHP" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/console">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="299">
-              <caret line="13" column="8" lean-forward="true" selection-start-line="13" selection-start-column="8" selection-end-line="13" selection-end-column="8" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Utils.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="290">
-              <caret line="31" column="27" selection-start-line="31" selection-start-column="27" selection-end-line="31" selection-end-column="27" />
-              <folding>
-                <element signature="e#223#256#0#PHP" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/vendor/symfony/console/Application.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="298">
-              <caret line="446" column="20" selection-start-line="446" selection-start-column="20" selection-end-line="446" selection-end-column="20" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Action/BaseAction.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="227">
-              <caret line="12" column="5" selection-start-line="12" selection-start-column="5" selection-end-line="12" selection-end-column="5" />
+            <state relative-caret-position="184">
+              <caret line="8" column="31" selection-start-line="8" selection-start-column="31" selection-end-line="8" selection-end-column="31" />
               <folding>
                 <element signature="e#40#75#0#PHP" expanded="true" />
               </folding>
@@ -175,10 +107,57 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Interfaces/Action.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="253">
+              <caret line="16" column="20" selection-start-line="16" selection-start-column="20" selection-end-line="16" selection-end-column="20" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Job/BaseJob.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="497">
+              <caret line="99" column="13" lean-forward="true" selection-start-line="99" selection-start-column="13" selection-end-line="99" selection-end-column="13" />
+              <folding>
+                <element signature="e#116#143#0#PHP" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Utils.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="290">
+              <caret line="122" column="27" selection-start-line="122" selection-start-column="27" selection-end-line="122" selection-end-column="27" />
+              <folding>
+                <element signature="e#223#256#0#PHP" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/config.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="736">
-              <caret line="37" column="10" selection-start-line="37" selection-start-column="10" selection-end-line="37" selection-end-column="10" />
+            <state relative-caret-position="414">
+              <caret line="23" column="28" selection-start-line="23" selection-start-column="28" selection-end-line="23" selection-end-column="28" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Output/HtmlOutput.php">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/Command/BaseCommand.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="253">
+              <caret line="17" column="28" selection-start-line="17" selection-start-column="28" selection-end-line="17" selection-end-column="28" />
             </state>
           </provider>
         </entry>
@@ -187,9 +166,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>workerObjMap</find>
-      <find>exit</find>
-      <find>save</find>
       <find>waitForWorkers</find>
       <find>n info</find>
       <find>write</find>
@@ -212,11 +188,14 @@
       <find>setTopic</find>
       <find>getConnection</find>
       <find>SymConsoleInput</find>
-      <find>is listening!</find>
       <find>n pop</find>
       <find>v1.0</find>
       <find>configObj</find>
       <find>runMethodExceptionHandle</find>
+      <find>is listening!</find>
+      <find>length is</find>
+      <find>saveMasterProcessInfo</find>
+      <find>n exit</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -249,14 +228,12 @@
         <option value="$PROJECT_DIR$/src/Input/HtmlInput.php" />
         <option value="$PROJECT_DIR$/src/Queue/BaseQueue.php" />
         <option value="$PROJECT_DIR$/src/Constants.php" />
-        <option value="$PROJECT_DIR$/src/Interfaces/Action.php" />
         <option value="$PROJECT_DIR$/src/Interfaces/Job.php" />
         <option value="$PROJECT_DIR$/src/Interfaces/Log.php" />
         <option value="$PROJECT_DIR$/src/Log/BaseLog.php" />
         <option value="$PROJECT_DIR$/src/Log/ConsoleLog.php" />
         <option value="$PROJECT_DIR$/src/ProvideService.php" />
         <option value="$PROJECT_DIR$/src/Interfaces/Container.php" />
-        <option value="$PROJECT_DIR$/src/Command/BaseCommand.php" />
         <option value="$PROJECT_DIR$/src/Provider/ConsoleProvider.php" />
         <option value="$PROJECT_DIR$/src/Interfaces/Provider.php" />
         <option value="$PROJECT_DIR$/src/Interfaces/Task.php" />
@@ -266,8 +243,6 @@
         <option value="$PROJECT_DIR$/src/Provider/SapiProvider.php" />
         <option value="$PROJECT_DIR$/prodqueu.php" />
         <option value="$PROJECT_DIR$/src/Output/SymOutput.php" />
-        <option value="$PROJECT_DIR$/config.php" />
-        <option value="$PROJECT_DIR$/src/Job/BaseJob.php" />
         <option value="$PROJECT_DIR$/src/Provider/CliProvider.php" />
         <option value="$PROJECT_DIR$/src/Provider/CgiProvider.php" />
         <option value="$PROJECT_DIR$/composer.json" />
@@ -281,7 +256,11 @@
         <option value="$PROJECT_DIR$/src/Command/JobStopCommand.php" />
         <option value="$PROJECT_DIR$/src/Command/JobHelpCommand.php" />
         <option value="$PROJECT_DIR$/src/Command/JobStartCommand.php" />
+        <option value="$PROJECT_DIR$/src/Interfaces/Action.php" />
+        <option value="$PROJECT_DIR$/src/Job/BaseJob.php" />
+        <option value="$PROJECT_DIR$/config.php" />
         <option value="$PROJECT_DIR$/src/Process/BaseProcess.php" />
+        <option value="$PROJECT_DIR$/src/Command/BaseCommand.php" />
       </list>
     </option>
   </component>
@@ -371,6 +350,12 @@
               <item name="swoole-jobs" type="b2602c69:ProjectViewProjectNode" />
               <item name="swoole-jobs" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="Output" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="swoole-jobs" type="b2602c69:ProjectViewProjectNode" />
+              <item name="swoole-jobs" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="Process" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -384,11 +369,6 @@
               <item name="swoole-jobs" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="Serialize" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="swoole-jobs" type="b2602c69:ProjectViewProjectNode" />
-              <item name="swoole-jobs" type="462c0819:PsiDirectoryNode" />
-              <item name="var" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -441,12 +421,12 @@
       <option name="presentableId" value="Default" />
       <updated>1557307329162</updated>
       <workItem from="1557307330356" duration="87356000" />
-      <workItem from="1558059882750" duration="5656000" />
+      <workItem from="1558059882750" duration="10603000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="93012000" />
+    <option name="totallyTimeSpent" value="97959000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -480,34 +460,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/Interfaces/Action.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="322">
-          <caret line="19" column="20" selection-start-line="19" selection-start-column="20" selection-end-line="19" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Interfaces/Output.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="92">
-          <caret line="9" selection-start-line="9" selection-end-line="9" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/plugins/php/lib/php.jar!/stubs/standard/_standard_manual.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="598">
-          <caret line="26" column="37" lean-forward="true" selection-start-line="26" selection-start-column="37" selection-end-line="26" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/monolog/monolog/src/Monolog/Handler/StreamHandler.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="298">
-          <caret line="41" column="20" selection-start-line="41" selection-start-column="20" selection-end-line="41" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/vendor/monolog/monolog/src/Monolog/Logger.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="342">
@@ -678,16 +630,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Job/BaseJob.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2254">
-          <caret line="112" column="68" selection-start-line="112" selection-start-column="68" selection-end-line="112" selection-end-column="68" />
-          <folding>
-            <element signature="e#116#143#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Serialize/PhpSerialize.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="138">
@@ -722,13 +664,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Command/BaseCommand.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="138">
-          <caret line="12" column="6" selection-start-line="12" selection-start-column="6" selection-end-line="12" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Action/LaravelAction.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="365">
@@ -755,16 +690,6 @@
           <caret line="114" column="49" selection-start-line="114" selection-start-column="25" selection-end-line="114" selection-end-column="49" />
           <folding>
             <element signature="e#117#142#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Action/BaseAction.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="227">
-          <caret line="12" column="5" selection-start-line="12" selection-start-column="5" selection-end-line="12" selection-end-column="5" />
-          <folding>
-            <element signature="e#40#75#0#PHP" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -807,40 +732,87 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Command/JobStartCommand.php">
+    <entry file="file://$PROJECT_DIR$/var/pinfo">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/plugins/php/lib/php.jar!/stubs/standard/standard_2.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="506">
-          <caret line="24" column="41" selection-start-line="24" selection-start-column="41" selection-end-line="24" selection-end-column="41" />
+        <state relative-caret-position="320">
+          <caret line="1103" column="9" selection-start-line="1103" selection-start-column="9" selection-end-line="1103" selection-end-column="9" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/var/pinfo">
+    <entry file="file://$PROJECT_DIR$/var/pid">
       <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Output/HtmlOutput.php">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="414">
+          <caret line="23" column="28" selection-start-line="23" selection-start-column="28" selection-end-line="23" selection-end-column="28" />
+        </state>
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Utils.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="290">
-          <caret line="31" column="27" selection-start-line="31" selection-start-column="27" selection-end-line="31" selection-end-column="27" />
+          <caret line="122" column="27" selection-start-line="122" selection-start-column="27" selection-end-line="122" selection-end-column="27" />
           <folding>
             <element signature="e#223#256#0#PHP" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/config.php">
+    <entry file="file://$PROJECT_DIR$/src/Job/BaseJob.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="736">
-          <caret line="37" column="10" selection-start-line="37" selection-start-column="10" selection-end-line="37" selection-end-column="10" />
+        <state relative-caret-position="497">
+          <caret line="99" column="13" lean-forward="true" selection-start-line="99" selection-start-column="13" selection-end-line="99" selection-end-column="13" />
+          <folding>
+            <element signature="e#116#143#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Interfaces/Action.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="253">
+          <caret line="16" column="20" selection-start-line="16" selection-start-column="20" selection-end-line="16" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Action/BaseAction.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="184">
+          <caret line="8" column="31" selection-start-line="8" selection-start-column="31" selection-end-line="8" selection-end-column="31" />
+          <folding>
+            <element signature="e#40#75#0#PHP" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Process/BaseProcess.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1314">
-          <caret line="222" column="66" selection-start-line="222" selection-start-column="66" selection-end-line="222" selection-end-column="66" />
+        <state relative-caret-position="1775">
+          <caret line="322" column="16" selection-start-line="322" selection-start-column="16" selection-end-line="322" selection-end-column="16" />
           <folding>
             <element signature="e#120#147#0#PHP" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Command/JobStartCommand.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="506">
+          <caret line="24" column="19" lean-forward="true" selection-start-line="24" selection-start-column="19" selection-end-line="24" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Command/BaseCommand.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="253">
+          <caret line="17" column="28" selection-start-line="17" selection-start-column="28" selection-end-line="17" selection-end-column="28" />
         </state>
       </provider>
     </entry>

@@ -10,6 +10,7 @@ namespace Michael\Jobs\Process;
 
 use Michael\Jobs\Constants;
 use Michael\Jobs\Interfaces\Config;
+use Michael\Jobs\Interfaces\Job;
 use Michael\Jobs\Interfaces\Output;
 use Michael\Jobs\Interfaces\Process;
 use Michael\Jobs\Utils;
@@ -82,6 +83,11 @@ class BaseProcess implements Process
      */
     public function saveMasterProcessInfo()
     {
+        //daemon process
+        if ($this->isDaemon) {
+            @\Swoole\Process::daemon();
+        }
+        $this->setProcessName(sprintf('%s:%s', 'master', $this->processNameSuffix));
         $this->mpid = getmypid();
         $this->mstatus = Constants::RUN_STATUS_RUNING;
         //保存master信息
@@ -113,10 +119,6 @@ class BaseProcess implements Process
      */
     public function exec()
     {
-        //daemon process
-        if ($this->isDaemon) {
-            @\Swoole\Process::daemon();
-        }
         $topics = $this->topics;
         //no topic quit
         if (!$topics) {
@@ -221,7 +223,8 @@ class BaseProcess implements Process
     public function registerTimer()
     {
         \Swoole\Timer::tick($this->queueBusyCheckTimer, function () {
-            $this->outputObj->info(time() . ' is running');
+            $info = sprintf('Master process %u running time is %.2f hours from %s', $this->mpid, (time() - $this->startTime) / 3600, date('Y-m-d H:i:s'));;
+            $this->outputObj->info($info);
         });
     }
 
@@ -234,8 +237,16 @@ class BaseProcess implements Process
         $this->mstatus = Constants::RUN_STATUS_STOP;
         $this->saveMasterStatus($this->mstatus);
         $mpid = $this->getMasterPid();
+        if (empty($mpid)) {
+            $this->outputObj->warn('Current host is not running job server');
+            return;
+        }
         @\Swoole\Process::kill($mpid);
+        $this->outputObj->warn('Now is kill master process ' . $mpid);
         sleep(1);
+        @unlink($this->minfoFilepath);
+        @unlink($this->mpidFilepath);
+        $this->outputObj->warn('Current host running job server stoped success');
     }
 
     /**
@@ -244,7 +255,7 @@ class BaseProcess implements Process
     protected function masterExit()
     {
         foreach ($this->workerMap as $pid => $worker) {
-            \Swoole\Process::kill($pid);
+            @\Swoole\Process::kill($pid);
             unset($this->workerMap[$pid]);
             unset($this->workerObjMap[$pid]);
             $this->workerNum--;
@@ -255,7 +266,7 @@ class BaseProcess implements Process
     }
 
     /**
-     * 创建消费工作者
+     *
      * @param $workerNum
      * @param $topic
      * @param $workerType
@@ -264,15 +275,15 @@ class BaseProcess implements Process
     public function createConsumeWorker($workerNum, $topic, $workerType)
     {
         $reserveProcess = new \Swoole\Process(function ($worker) use ($workerNum, $topic, $workerType) {
-            //check master process
+            $info = sprintf("%s Worker process (%u) start to handle %s(%u)", $workerType, getmypid(), $topic, $workerNum);
+            $this->outputObj->warn($info);
+            Utils::getLog()->warning($info);
+            //check master process exist
             $this->checkMaster($worker);
             $beginTime = time();
-            try {
-                // set process name
+            $closure = function ($beginTime, $workerType, $topic, $workerNum) {
                 $workerProcessName = sprintf('%s:%s:%s:%s', $workerType, $topic, $workerNum, $this->processNameSuffix);
-                if (function_exists('swoole_set_process_name') && PHP_OS != 'Darwin') {
-                    swoole_set_process_name($workerProcessName);
-                }
+                $this->setProcessName($workerProcessName);
                 $jobObj = Utils::app()->get('job');
                 $jobObj->setTopic($topic);
                 do {
@@ -283,9 +294,9 @@ class BaseProcess implements Process
                     $conditionTwo = Constants::PROC_WORKER_TYPE_STATIC == $workerType;
                     $conditionThree = time() < ($beginTime + $this->workerMaxExecTime);
                 } while ($conditionOne && $conditionTwo && $conditionThree);
-            } catch (\Exception $e) {
-                $this->outputObj->error($e->getMessage());
-            }
+                return true;
+            };
+            Utils::runMethodExceptionHandle($closure, [$beginTime, $workerType, $topic, $workerNum]);
         });
         // start up worker process
         $pid = $reserveProcess->start();
@@ -300,7 +311,17 @@ class BaseProcess implements Process
     }
 
     /**
-     * 检查
+     * @param $workerProcessName
+     */
+    protected function setProcessName($workerProcessName)
+    {
+        if (function_exists('swoole_set_process_name') && PHP_OS != 'Darwin') {
+            swoole_set_process_name($workerProcessName);
+        }
+    }
+
+    /**
+     * 检查主进程是否存活
      * @param $worker
      */
     protected function checkMaster(&$worker)

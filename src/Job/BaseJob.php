@@ -87,9 +87,7 @@ class BaseJob implements Job
      */
     public function run()
     {
-        $this->outputObj->info($this->topic . ' is listening!');
         $len = $this->queueDriver->len($this->topic);
-        $this->outputObj->info($this->topic . ' length is ' . $len);
         if ($len <= 0) {
             sleep($this->idleSleepSec);
             return true;
@@ -109,8 +107,6 @@ class BaseJob implements Job
                 usleep(1000);
                 continue;
             }
-
-            $this->outputObj->info('Task is ' . json_encode($task));
             $type = gettype($task);
             if ($type == 'object') {
                 $realTask = $task;
@@ -121,6 +117,7 @@ class BaseJob implements Job
                 Utils::getLog()->error($this->serializeObj->encode($task) . ' message body cannot be handle!');
                 continue;
             }
+            $this->outputObj->info('Task ' . json_encode($realTask).' is handling now');
             $closure = function () use ($actionInstance, $realTask) {
                 $actionInstance->start($realTask);
             };
@@ -136,6 +133,9 @@ class BaseJob implements Job
     {
         $actionConfig = Utils::app()->get('action_config')->getConfig();
         $actionClassName = Utils::arrayGet($actionConfig, 'class', \Michael\Jobs\Action\BaseAction::class);
+        /**
+         * @var Action $actionInstance
+         */
         $actionInstance = new $actionClassName;
         $actionInstance->setAutoloadPath(Utils::arrayGet($actionConfig, 'autoload_path'));
         $actionInstance->setAppPath(Utils::arrayGet($actionConfig, 'app_path'));
