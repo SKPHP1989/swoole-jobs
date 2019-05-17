@@ -29,7 +29,6 @@ class BaseConsole implements Console
      * @var Process
      */
     protected $processObj;
-    protected $configObj;
 
     public function __construct()
     {
@@ -50,9 +49,9 @@ class BaseConsole implements Console
 
     public function exit()
     {
-        $this->outputObj->info('Now is restarting process,please wait for a moment');
+        $this->outputObj->info('Now is exiting process,please wait for a moment');
         $this->processObj->exit();
-        $this->outputObj->info('Now is restarting process,please wait for a moment');
+        $this->outputObj->info('Now exited process');
     }
 
     public function restart()
@@ -68,14 +67,14 @@ class BaseConsole implements Console
 
     public function stop()
     {
-        $this->outputObj->info('Now is restarting process,please wait for a moment');
+        $this->outputObj->info('Now is stoping process,please wait for a moment');
         $this->processObj->exit();
-        $this->outputObj->info('Now is restarting process,please wait for a moment');
+        $this->outputObj->info('Now stoped process');
     }
 
     public function status()
     {
-        $this->outputObj->info('Now is restarting process,please wait for a moment');
+        $this->outputObj->info('The status method is empty!');
     }
 
     public function help()

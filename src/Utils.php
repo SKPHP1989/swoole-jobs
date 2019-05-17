@@ -106,6 +106,7 @@ class Utils
     {
         return static::app()->setShared('provider', CliProvider::class);
     }
+
     /**
      * 注册简单提供者
      */
@@ -131,5 +132,26 @@ class Utils
             Utils::getLog()->critical($e->getTraceAsString());
         }
         return false;
+    }
+
+    /**
+     * 运行
+     * @param array $config
+     * @throws \Exception
+     */
+    public static function run(array $config)
+    {
+        Utils::setConfig($config);
+        //Console实例
+        $appName = Utils::arrayGet($config, 'system', "Michael jobs app");
+        $appVersion = Utils::arrayGet($config, 'version', "V1.0");
+        $application = new \Symfony\Component\Console\Application($appName, $appVersion);
+        // 注册命令
+        $application->addCommands([
+            new \Michael\Jobs\Command\JobStartCommand,
+            new \Michael\Jobs\Command\JobHelpCommand,
+            new \Michael\Jobs\Command\JobStopCommand,
+        ]);
+        $application->run();
     }
 }

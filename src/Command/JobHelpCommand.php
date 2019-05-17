@@ -6,13 +6,13 @@ use Michael\Jobs\Utils;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class JobStartCommand extends BaseCommand
+class JobHelpCommand extends BaseCommand
 {
-    protected static $defaultName = 'job:start';
+    protected static $defaultName = 'job:help';
 
     protected function configure()
     {
-        $this->setDescription('Create a job server');
+        $this->setDescription('Show help to a job server');
     }
 
     /**
@@ -24,6 +24,6 @@ class JobStartCommand extends BaseCommand
     {
         parent::execute($input, $output);
         $consoleObj = Utils::app()->get('console');
-        $consoleObj->start();
+        $consoleObj->help();
     }
 }

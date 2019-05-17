@@ -6,6 +6,7 @@ namespace Michael\Jobs\Action;
 use Michael\Jobs\ErrCode;
 use Michael\Jobs\Interfaces\Action;
 use Michael\Jobs\Interfaces\Task;
+use Michael\Jobs\Utils;
 
 class LaravelAction implements Action
 {
@@ -34,7 +35,7 @@ class LaravelAction implements Action
     public function start($task)
     {
         $application = self::getApplication();
-        try {
+        $closure = function ($task, $application) {
             $argv = [
                 'artisan',
                 $task->getHandleClass() . ':' . $task->getHandleMethod(),
@@ -44,9 +45,8 @@ class LaravelAction implements Action
                 new \Symfony\Component\Console\Input\ArgvInput($argv),
                 new \Symfony\Component\Console\Output\ConsoleOutput()
             );
-        } catch (\Exception $e) {
-            throw new \UnexpectedValueException($e->getMessage(), ErrCode::RUN_ERR);
-        }
+        };
+        Utils::runMethodExceptionHandle($closure, [$task, $closure]);
         unset($application, $JobObject);
     }
 

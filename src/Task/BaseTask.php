@@ -101,7 +101,7 @@ class BaseTask implements Task
         $queueConfig = Utils::getProvider()->get('queue_config')->getConfig();
         $topicConfig = Utils::arrayGet($topicAllConfig, $this->topic);
         $queueDriverName = Utils::arrayGet($topicConfig, 'drive', 'redis_queue');
-        $closure = function () use ($queueConfig, $queueDriverName) {
+        $closure = function ($queueConfig, $queueDriverName) {
             $queueDriver = Utils::getProvider()->get($queueDriverName);
             if (empty($queueDriver)) {
                 throw new \UnexpectedValueException($queueDriverName . ' queue driver is not exist!', ErrCode::CLASS_NOT_EXIST);
@@ -112,12 +112,11 @@ class BaseTask implements Task
             }
             return $driver;
         };
-        $driver = Utils::runMethodExceptionHandle($closure);
+        $driver = Utils::runMethodExceptionHandle($closure, [$queueConfig, $queueDriverName]);
         if (!$driver) {
-            Utils::getProvider()->get("output")->error('Task :' . json_encode($this) . ' write fail!');
+            Utils::getLog()->error('Task :' . json_encode($this) . ' write fail!');
             return false;
         }
         return $driver->push($this->topic, $this);
-
     }
 }

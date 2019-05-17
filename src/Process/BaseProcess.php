@@ -10,7 +10,6 @@ namespace Michael\Jobs\Process;
 
 use Michael\Jobs\Constants;
 use Michael\Jobs\Interfaces\Config;
-use Michael\Jobs\Interfaces\Log;
 use Michael\Jobs\Interfaces\Output;
 use Michael\Jobs\Interfaces\Process;
 use Michael\Jobs\Utils;
@@ -18,10 +17,6 @@ use Michael\Jobs\Utils;
 class BaseProcess implements Process
 {
     //类
-    /**
-     * @var Log
-     */
-    protected $logObj;
     /**
      * @var Output
      */
@@ -51,6 +46,7 @@ class BaseProcess implements Process
     protected $mpidFilepath;
     protected $minfoFilepath;
     protected $topics;
+    protected $isDaemon = false;
 
     /**
      * BaseProcess constructor.
@@ -61,7 +57,6 @@ class BaseProcess implements Process
         $this->outputObj = Utils::app()->get('output');
         $this->processConfigObj = Utils::app()->get('process_config');
         $this->topicConfigObj = Utils::app()->get('topic_config');
-        $this->logObj=Utils::app()->get('log');
         //config
         $config = $this->processConfigObj->getConfig();
         $this->topics = $this->topicConfigObj->getConfig();
@@ -75,14 +70,11 @@ class BaseProcess implements Process
             exit();
         }
         Utils::mkdir($varPath);
-        //daemon process
-        if (Utils::arrayGet($config, 'is_daemon', false)) {
-            @\Swoole\Process::daemon();
-        }
         //path
-        $this->mpidFilepath = $varPath . DIRECTORY_SEPARATOR . 'pid';
-        $this->minfoFilepath = $varPath . DIRECTORY_SEPARATOR . 'pinfo';
+        $this->mpidFilepath = realpath($varPath) . DIRECTORY_SEPARATOR . 'pid';
+        $this->minfoFilepath = realpath($varPath) . DIRECTORY_SEPARATOR . 'pinfo';
         $this->startTime = time();
+        $this->isDaemon = Utils::arrayGet($config, 'is_daemon', $this->isDaemon);
     }
 
     /**
@@ -104,7 +96,7 @@ class BaseProcess implements Process
     {
         $mpid = $this->getMasterPid();
         if (!$mpid) {
-            $this->logObj->emergency('Master PID get fail');
+            Utils::getLog()->emergency('Master PID get fail');
             return true;
         }
         for ($i = 0; $i < 3; $i++) {
@@ -121,15 +113,20 @@ class BaseProcess implements Process
      */
     public function exec()
     {
+        //daemon process
+        if ($this->isDaemon) {
+            @\Swoole\Process::daemon();
+        }
         $topics = $this->topics;
         //no topic quit
         if (!$topics) {
             return true;
         }
-        foreach ($topics as $topic) {
+        foreach ($topics as $k => $topic) {
             $workerMinNum = Utils::arrayGet($topic, 'worker_min_num', 0);
-            $name = Utils::arrayGet($topic, 'name', '');
+            $name = Utils::arrayGet($topic, 'name', $k);
             if (empty($workerMinNum) || empty($name)) {
+                $this->outputObj->error(sprintf("%s(%s) config is error", $name, $workerMinNum));
                 continue;
             }
             for ($i = 0; $i < $workerMinNum; $i++) {
@@ -140,22 +137,22 @@ class BaseProcess implements Process
 
     public function saveMasterPid($pid)
     {
-        return file_put_contents($this->mpidFilepath, $pid);
+        return @file_put_contents($this->mpidFilepath, $pid);
     }
 
     public function saveMasterStatus($status)
     {
-        return file_put_contents($this->minfoFilepath, $status);
+        return @file_put_contents($this->minfoFilepath, $status);
     }
 
     public function getMasterPid()
     {
-        return file_get_contents($this->mpidFilepath);
+        return @file_get_contents($this->mpidFilepath);
     }
 
     public function getMasterStatus()
     {
-        return file_get_contents($this->minfoFilepath);
+        return @file_get_contents($this->minfoFilepath);
     }
 
     public function registerSignal()
@@ -223,7 +220,7 @@ class BaseProcess implements Process
      */
     public function registerTimer()
     {
-        \Swoole\Timer::tick($this->queueBusyCheckTimer, function ($timerId) {
+        \Swoole\Timer::tick($this->queueBusyCheckTimer, function () {
             $this->outputObj->info(time() . ' is running');
         });
     }

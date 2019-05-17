@@ -11,18 +11,16 @@ class BaseAction implements Action
 
     public function setAutoloadPath($path = '')
     {
-
     }
 
     public function setAppPath($path = '')
     {
-
     }
 
     public function start($task)
     {
         Utils::getLog()->info(json_encode($task) . ' is handling');
-        $closure = function () use ($task) {
+        $closure = function ($task) {
             $jobClass = $task->getHandleClass();
             $jobMethod = $task->getHandleMethod();
             $jobParams = $task->getHandleParams();
@@ -32,6 +30,6 @@ class BaseAction implements Action
             }
         };
         Utils::getLog()->info(json_encode($task) . ' is handled');
-        Utils::runMethodExceptionHandle($closure);
+        Utils::runMethodExceptionHandle($closure, [$task]);
     }
 }

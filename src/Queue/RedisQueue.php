@@ -41,7 +41,7 @@ class RedisQueue extends BaseQueue
             $this->queueDriver = static::$connections[$configID];
             return $this;
         }
-        $closure = function () use ($config, $configID) {
+        $closure = function ($config, $configID) {
             $host = Utils::arrayGet($config, 'host', '127.0.0.1');
             $port = Utils::arrayGet($config, 'port', '6379');
             $password = Utils::arrayGet($config, 'password', '');
@@ -53,7 +53,7 @@ class RedisQueue extends BaseQueue
             $this->queueDriver = static::$connections[$configID];
             return $this;
         };
-        return Utils::runMethodExceptionHandle($closure);
+        return Utils::runMethodExceptionHandle($closure, [$config, $configID]);
     }
 
     public function push($topic, $job): string
