@@ -14,8 +14,12 @@ use Michael\Jobs\Interfaces\Queue;
 
 abstract class BaseQueue implements Queue
 {
-    public $topics = [];
-    public $queueDriver = null;
+    protected $topics = [];
+    /**
+     * @var Queue
+     */
+    protected $queueDriver = null;
+    protected $queueDriverID = null;
 
     public function getConnection(array $config)
     {

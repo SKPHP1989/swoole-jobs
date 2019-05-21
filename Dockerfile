@@ -42,7 +42,7 @@ RUN docker-php-ext-configure intl \
     && pecl install redis \
     && docker-php-ext-enable redis
 
-VOLUME ["/data"]
-WORKDIR /data
+VOLUME ["./"]
+WORKDIR /app
 
-CMD [ "/bin/bash"]
+CMD [ "/app/console job:start"]

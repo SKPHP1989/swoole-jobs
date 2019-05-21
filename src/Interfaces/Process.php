@@ -18,7 +18,7 @@ interface Process
 
     public function registerTimer();
 
-    public function createConsumeWorker($workerNum, $topic, $workerType);
+    public function createConsumeWorker($workerNo, $topic, $workerType);
 
     public function getMasterPid();
 

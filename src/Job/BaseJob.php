@@ -117,7 +117,7 @@ class BaseJob implements Job
                 Utils::getLog()->error($this->serializeObj->encode($task) . ' message body cannot be handle!');
                 continue;
             }
-            $this->outputObj->info('Task ' . json_encode($realTask).' is handling now');
+            $this->outputObj->info('Task ' . json_encode($realTask) . ' is handling now');
             $closure = function () use ($actionInstance, $realTask) {
                 $actionInstance->start($realTask);
             };
@@ -127,9 +127,19 @@ class BaseJob implements Job
     }
 
     /**
+     *
+     */
+    public function getWaitingAmount()
+    {
+        $len = $this->queueDriver->len($this->topic);
+        $this->queueDriver->close();
+        return $len;
+    }
+
+    /**
      * @return Action
      */
-    public function instanceAction()
+    protected function instanceAction()
     {
         $actionConfig = Utils::app()->get('action_config')->getConfig();
         $actionClassName = Utils::arrayGet($actionConfig, 'class', \Michael\Jobs\Action\BaseAction::class);

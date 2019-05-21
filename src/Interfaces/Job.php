@@ -13,4 +13,6 @@ interface Job
 
     public function run();
 
+    public function getWaitingAmount();
+
 }

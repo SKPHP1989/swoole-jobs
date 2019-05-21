@@ -50,12 +50,18 @@ class RedisQueue extends BaseQueue
             if (!empty($password)) {
                 static::$connections[$configID]->auth($password);
             }
+            $this->queueDriverID = $configID;
             $this->queueDriver = static::$connections[$configID];
             return $this;
         };
         return Utils::runMethodExceptionHandle($closure, [$config, $configID]);
     }
 
+    /**
+     * @param $topic
+     * @param $job
+     * @return string
+     */
     public function push($topic, $job): string
     {
         if (!$this->isConnected()) {
@@ -107,6 +113,8 @@ class RedisQueue extends BaseQueue
         }
 
         $this->queueDriver->close();
+        unset(static::$connections[$this->queueDriverID]);
+        $this->queueDriver = null;
     }
 
     public function isConnected()

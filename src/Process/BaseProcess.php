@@ -10,7 +10,6 @@ namespace Michael\Jobs\Process;
 
 use Michael\Jobs\Constants;
 use Michael\Jobs\Interfaces\Config;
-use Michael\Jobs\Interfaces\Job;
 use Michael\Jobs\Interfaces\Output;
 use Michael\Jobs\Interfaces\Process;
 use Michael\Jobs\Utils;
@@ -33,12 +32,11 @@ class BaseProcess implements Process
     protected $utilObj;
     //工作者信息
     protected $workerMap = [];
-    protected $workerObjMap = [];
-    protected $workerNum = 0;
+    protected $workerTopicMap = [];
     //配置
     protected $startTime = 0;
     //工作者最大执行时间
-    protected $processNameSuffix = 'michael-job';
+    protected $processNameSuffix = 'mjobs';
     protected $workerMaxExecTime = 1200;
     protected $queueBusyMax = 1000;
     protected $queueBusyCheckTimer = 20;
@@ -68,7 +66,7 @@ class BaseProcess implements Process
         $varPath = $config['var_path'] ?? '';
         if (empty($varPath)) {
             $this->outputObj->error('Config var path must be set!');
-            exit();
+            exit(0);
         }
         Utils::mkdir($varPath);
         //path
@@ -157,6 +155,12 @@ class BaseProcess implements Process
         return @file_get_contents($this->minfoFilepath);
     }
 
+    protected function clearProcessLocalInfo()
+    {
+        @unlink($this->minfoFilepath);
+        @unlink($this->mpidFilepath);
+    }
+
     public function registerSignal()
     {
         //force x quit signal
@@ -184,16 +188,27 @@ class BaseProcess implements Process
                     break;
                 }
                 $workerPid = $workerProcessQuitInfo['pid'];
-                $workerObj = $this->workerObjMap[$workerPid];
-                $topic = Utils::arrayGet($this->workerMap[$workerPid], 'topic', '');
-                $this->status = $this->getMasterStatus();
-                //master process status is running and this child process can be restarted
-                $conditionOne = Constants::RUN_STATUS_RUNING == $this->mstatus;
-                $conditionTwo = Constants::PROC_WORKER_TYPE_STATIC == $this->workerMap[$workerPid]['worker_type'];
-                if (!$conditionOne || !$conditionTwo) {
+                $workerInfo = Utils::arrayGet($this->workerMap, $workerPid);
+                if (empty($workerInfo)) {
+                    Utils::getLog()->error($workerPid . ' worker process info is not exist');
                     continue;
                 }
-                try {
+                $topic = Utils::arrayGet($workerInfo, 'topic', '');
+                $workerType = Utils::arrayGet($workerInfo, 'worker_type', '');
+                $workerObj = Utils::arrayGet($workerInfo, 'worker_obj', '');
+                //动态进程不重启
+                if ($workerType == Constants::PROC_WORKER_TYPE_DYNAMIC) {
+                    unset($this->workerMap[$workerPid]);
+                    $this->workerTopicMap[$topic][$workerType]--;
+                    continue;
+                }
+                //master process status is running and this child process can be restarted
+                if (Constants::RUN_STATUS_RUNING != $this->mstatus) {
+                    unset($this->workerMap[$workerPid]);
+                    $this->workerTopicMap[$topic][$workerType]--;
+                    continue;
+                }
+                $closure = function ($workerObj, $topic) {
                     //start up new child process
                     for ($i = 0; $i < 3; ++$i) {
                         $newWorkerPid = $workerObj->start();
@@ -202,17 +217,19 @@ class BaseProcess implements Process
                         }
                         sleep(1);
                     }
+                    $workerType = Constants::PROC_WORKER_TYPE_STATIC;
                     $this->workerMap[$newWorkerPid] = [
-                        'worker_type' => Constants::PROC_WORKER_TYPE_STATIC,
+                        'worker_type' => $workerType,
+                        'worker_obj' => $workerObj,
                         'topic' => $topic
                     ];
-                    $this->workerObjMap[$newWorkerPid] = $workerObj;
-                    $this->workerNum++;
-                } catch (\Exception $e) {
-                    $this->outputObj->error($e->getMessage());
-                    $this->outputObj->error($e->getTraceAsString());
-                    continue;
-                }
+                    if (isset($this->workerTopicMap[$topic][$workerType])) {
+                        $this->workerTopicMap[$topic][$workerType]++;
+                    } else {
+                        $this->workerTopicMap[$topic][$workerType] = 1;
+                    }
+                };
+                Utils::runMethodExceptionHandle($closure, [$workerObj, $topic]);
             } while (true);
         });
     }
@@ -222,9 +239,50 @@ class BaseProcess implements Process
      */
     public function registerTimer()
     {
-        \Swoole\Timer::tick($this->queueBusyCheckTimer, function () {
-            $info = sprintf('Master process %u running time is %.2f hours from %s', $this->mpid, (time() - $this->startTime) / 3600, date('Y-m-d H:i:s'));;
+        // Statistic
+        \Swoole\Timer::tick(10 * 1000, function () {
+            $info = sprintf('Master process %u running time is %.2f hours from %s', $this->mpid, (time() - $this->startTime) / 3600, date('Y-m-d H:i:s', $this->startTime));;
             $this->outputObj->info($info);
+        });
+        static $_dynamicWorkerNumMap = [];
+        // boot dynamic customer process
+        \Swoole\Timer::tick($this->queueBusyCheckTimer, function () use (&$_dynamicWorkerNumMap) {
+            // quit master process
+            if ($this->getMasterStatus() != Constants::RUN_STATUS_RUNING) {
+                $this->masterExit();
+                return;
+            }
+            foreach ($this->topics as $k => $topicInfo) {
+                $workerMinNum = Utils::arrayGet($topicInfo, 'worker_min_num', 0);
+                $workerMaxNum = Utils::arrayGet($topicInfo, 'worker_max_num', 0);
+                $topic = Utils::arrayGet($topicInfo, 'name', $k);
+                if (empty($workerMinNum) || empty($topic) || empty($workerMaxNum)) {
+                    $this->outputObj->warn(sprintf("Topic:%s,WorkerMinNum:%u,WorkerMaxNum:%u config is error", $topic, $workerMinNum, $workerMaxNum));
+                    continue;
+                }
+                $jobObj = Utils::app()->get('job');
+                $jobObj->setTopic($topic);
+                $waitingAmount = $jobObj->getWaitingAmount();
+                //超过挤压量
+                if ($waitingAmount <= $this->queueBusyMax) {
+                    $this->outputObj->warn($topic . ' current queue waiting amount is not busy');
+                    continue;
+                }
+                $workerType = Constants::PROC_WORKER_TYPE_DYNAMIC;
+                //
+                $currentTopicTypeNum = $this->workerTopicMap[$topic][$workerType] ?? 0;
+                if ($currentTopicTypeNum >= $workerMaxNum) {
+                    $this->outputObj->warn('Current dynamic worker is max num');
+                    continue;
+                }
+                if (isset($_dynamicWorkerNumMap[$topic])) {
+                    $_dynamicWorkerNumMap[$topic]++;
+                    $workerNum = $_dynamicWorkerNumMap[$topic];
+                } else {
+                    $workerNum = $_dynamicWorkerNumMap[$topic] = 0;
+                }
+                $this->createConsumeWorker($workerNum, $topic, $workerType);
+            }
         });
     }
 
@@ -244,8 +302,7 @@ class BaseProcess implements Process
         @\Swoole\Process::kill($mpid);
         $this->outputObj->warn('Now is kill master process ' . $mpid);
         sleep(1);
-        @unlink($this->minfoFilepath);
-        @unlink($this->mpidFilepath);
+        $this->clearProcessLocalInfo();
         $this->outputObj->warn('Current host running job server stoped success');
     }
 
@@ -260,8 +317,7 @@ class BaseProcess implements Process
             unset($this->workerObjMap[$pid]);
             $this->workerNum--;
         }
-        @unlink($this->minfoFilepath);
-        @unlink($this->mpidFilepath);
+        $this->clearProcessLocalInfo();
         exit(0);
     }
 
@@ -272,17 +328,17 @@ class BaseProcess implements Process
      * @param $workerType
      * @return bool
      */
-    public function createConsumeWorker($workerNum, $topic, $workerType)
+    public function createConsumeWorker($workerNo, $topic, $workerType)
     {
-        $reserveProcess = new \Swoole\Process(function ($worker) use ($workerNum, $topic, $workerType) {
-            $info = sprintf("%s Worker process (%u) start to handle %s(%u)", $workerType, getmypid(), $topic, $workerNum);
+        $reserveProcess = new \Swoole\Process(function ($worker) use ($workerNo, $topic, $workerType) {
+            $info = sprintf("%s Worker process (%u) start to handle %s(%u)", $workerType, getmypid(), $topic, $workerNo);
             $this->outputObj->warn($info);
             Utils::getLog()->warning($info);
             //check master process exist
             $this->checkMaster($worker);
             $beginTime = time();
-            $closure = function ($beginTime, $workerType, $topic, $workerNum) {
-                $workerProcessName = sprintf('%s:%s:%s:%s', $workerType, $topic, $workerNum, $this->processNameSuffix);
+            $closure = function ($beginTime, $workerType, $topic, $workerNo) {
+                $workerProcessName = sprintf('%s:%s:%s:%s', $workerType, $topic, $workerNo, $this->processNameSuffix);
                 $this->setProcessName($workerProcessName);
                 $jobObj = Utils::app()->get('job');
                 $jobObj->setTopic($topic);
@@ -296,17 +352,21 @@ class BaseProcess implements Process
                 } while ($conditionOne && $conditionTwo && $conditionThree);
                 return true;
             };
-            Utils::runMethodExceptionHandle($closure, [$beginTime, $workerType, $topic, $workerNum]);
+            Utils::runMethodExceptionHandle($closure, [$beginTime, $workerType, $topic, $workerNo]);
         });
         // start up worker process
         $pid = $reserveProcess->start();
         // record worker process info
-        $this->workerObjMap[$pid] = $reserveProcess;
         $this->workerMap[$pid] = [
             'worker_type' => $workerType,
-            'topic' => $topic
+            'topic' => $topic,
+            'worker_obj' => $reserveProcess
         ];
-        $this->workerNum++;
+        if (isset($this->workerTopicMap[$topic][$workerType])) {
+            $this->workerTopicMap[$topic][$workerType]++;
+        } else {
+            $this->workerTopicMap[$topic][$workerType] = 1;
+        }
         return true;
     }
 
