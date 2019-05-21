@@ -14,7 +14,6 @@ use Michael\Jobs\Utils;
  */
 class RedisQueue extends BaseQueue
 {
-    protected static $connections = [];
     /**
      * @var Output
      */
@@ -36,25 +35,15 @@ class RedisQueue extends BaseQueue
      */
     public function getConnection(array $config)
     {
-        $configID = md5(json_encode($config));
-        if (isset(static::$connections[$configID])) {
-            $this->queueDriver = static::$connections[$configID];
-            return $this;
+        $host = Utils::arrayGet($config, 'host', '127.0.0.1');
+        $port = Utils::arrayGet($config, 'port', '6379');
+        $password = Utils::arrayGet($config, 'password', '');
+        $this->queueDriver = new \Redis();
+        $this->queueDriver->connect($host, $port);
+        if (!empty($password)) {
+            $this->queueDriver->auth($password);
         }
-        $closure = function ($config, $configID) {
-            $host = Utils::arrayGet($config, 'host', '127.0.0.1');
-            $port = Utils::arrayGet($config, 'port', '6379');
-            $password = Utils::arrayGet($config, 'password', '');
-            static::$connections[$configID] = new \Redis();
-            static::$connections[$configID]->connect($host, $port);
-            if (!empty($password)) {
-                static::$connections[$configID]->auth($password);
-            }
-            $this->queueDriverID = $configID;
-            $this->queueDriver = static::$connections[$configID];
-            return $this;
-        };
-        return Utils::runMethodExceptionHandle($closure, [$config, $configID]);
+        return $this;
     }
 
     /**
@@ -111,9 +100,7 @@ class RedisQueue extends BaseQueue
         if (!$this->isConnected()) {
             return;
         }
-
         $this->queueDriver->close();
-        unset(static::$connections[$this->queueDriverID]);
         $this->queueDriver = null;
     }
 

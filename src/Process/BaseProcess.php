@@ -46,6 +46,8 @@ class BaseProcess implements Process
     protected $minfoFilepath;
     protected $topics;
     protected $isDaemon = false;
+    protected $errorHoldOnTime = 10;
+    protected $enableDynamicWorker = true;
 
     /**
      * BaseProcess constructor.
@@ -63,6 +65,7 @@ class BaseProcess implements Process
         $this->workerMaxExecTime = $config['worker_max_exec_time'] ?? $this->workerMaxExecTime;
         $this->queueBusyMax = $config['queue_busy_max'] ?? $this->queueBusyMax;
         $this->queueBusyCheckTimer = $config['queue_busy_check_timer'] ?? $this->queueBusyCheckTimer;
+        $this->enableDynamicWorker = $config['enable_dynamic_worker'] ?? $this->enableDynamicWorker;
         $varPath = $config['var_path'] ?? '';
         if (empty($varPath)) {
             $this->outputObj->error('Config var path must be set!');
@@ -246,7 +249,7 @@ class BaseProcess implements Process
         });
         static $_dynamicWorkerNumMap = [];
         // boot dynamic customer process
-        \Swoole\Timer::tick($this->queueBusyCheckTimer, function () use (&$_dynamicWorkerNumMap) {
+        $this->enableDynamicWorker && \Swoole\Timer::tick($this->queueBusyCheckTimer, function () use (&$_dynamicWorkerNumMap) {
             // quit master process
             if ($this->getMasterStatus() != Constants::RUN_STATUS_RUNING) {
                 $this->masterExit();
@@ -260,9 +263,17 @@ class BaseProcess implements Process
                     $this->outputObj->warn(sprintf("Topic:%s,WorkerMinNum:%u,WorkerMaxNum:%u config is error", $topic, $workerMinNum, $workerMaxNum));
                     continue;
                 }
-                $jobObj = Utils::app()->get('job');
-                $jobObj->setTopic($topic);
-                $waitingAmount = $jobObj->getWaitingAmount();
+                $closure = function ($topic) {
+                    $jobObj = Utils::app()->get('job');
+                    $jobObj->setTopic($topic);
+                    $waitingAmount = $jobObj->getWaitingAmount();
+                    $jobObj->clear();
+                    return $waitingAmount;
+                };
+                $waitingAmount = Utils::runMethodExceptionHandle($closure, [$topic]);
+                if ($waitingAmount === false) {
+                    continue;
+                }
                 //超过挤压量
                 if ($waitingAmount <= $this->queueBusyMax) {
                     $this->outputObj->warn($topic . ' current queue waiting amount is not busy');
@@ -344,15 +355,20 @@ class BaseProcess implements Process
                 $jobObj->setTopic($topic);
                 do {
                     $jobObj->run($topic);
-                    $this->status = $this->getMasterStatus();
+                    $this->mstatus = $this->getMasterStatus();
                     // condition
                     $conditionOne = Constants::RUN_STATUS_RUNING == $this->mstatus;
                     $conditionTwo = Constants::PROC_WORKER_TYPE_STATIC == $workerType;
                     $conditionThree = time() < ($beginTime + $this->workerMaxExecTime);
                 } while ($conditionOne && $conditionTwo && $conditionThree);
+                $jobObj->clear();
                 return true;
             };
-            Utils::runMethodExceptionHandle($closure, [$beginTime, $workerType, $topic, $workerNo]);
+            $ret = Utils::runMethodExceptionHandle($closure, [$beginTime, $workerType, $topic, $workerNo]);
+            //运行异常
+            if ($ret == false) {
+                sleep($this->errorHoldOnTime);
+            }
         });
         // start up worker process
         $pid = $reserveProcess->start();

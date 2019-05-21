@@ -15,4 +15,5 @@ interface Job
 
     public function getWaitingAmount();
 
+    public function clear();
 }

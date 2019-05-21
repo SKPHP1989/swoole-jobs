@@ -132,7 +132,6 @@ class BaseJob implements Job
     public function getWaitingAmount()
     {
         $len = $this->queueDriver->len($this->topic);
-        $this->queueDriver->close();
         return $len;
     }
 
@@ -150,5 +149,13 @@ class BaseJob implements Job
         $actionInstance->setAutoloadPath(Utils::arrayGet($actionConfig, 'autoload_path'));
         $actionInstance->setAppPath(Utils::arrayGet($actionConfig, 'app_path'));
         return $actionInstance;
+    }
+
+    /**
+     *
+     */
+    public function clear(){
+        $this->queueDriver->close();
+        $this->queueDriver = null;
     }
 }
